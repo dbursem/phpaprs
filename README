@@ -3,6 +3,9 @@
 | Copyright (c) 2008 Matthew Asham, VE7UDP <matthewa@bcwireless.net>         |
 +----------------------------------------------------------------------------+
 
+This is basically a fork of the phpAPRS library by Matthew Asham.
+All I did was some refactoring to get to know the code.
+
 = SYNOPSIS =
 
 phpAPRS is a PHP class for writing APRS utilities.  The class presently supports 
