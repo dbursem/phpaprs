@@ -19,18 +19,20 @@ else
 
 $aprs = new BCWNS_APRS();
 $aprs->_debug = $debug;
+$ogn = new OgnPosition(DB_NAME,DB_USER,DB_PASS,'localhost', $debug);
+
 
 $beacon = new BCWNS_APRS_Item(BEACON_LATITUDE, BEACON_LONGITUDE, MYCALL, BEACON_SYMBOL, BEACON_STATUS);
 $beacon->setCallsign(MYCALL);
 
-if ($aprs->connect(HOST, PORT, MYCALL, PASSCODE, FILTER) == FALSE) {
+$filter = $ogn->getFilter();
+
+if ($aprs->connect(HOST, PORT, MYCALL, PASSCODE, $filter) == FALSE) {
     echo "Connect failed\n";
     exit;
 }
 
 $lastbeacon = 1;
-
-$ogn = new OgnPosition(DB_NAME,DB_USER,DB_PASS,'localhost', $debug);
 
 // Setup our callbacks to process incoming stuff
 // $aprs->addCallback("APRSCODE_MESSAGE", "*", "aprsbot_handlemessage");
