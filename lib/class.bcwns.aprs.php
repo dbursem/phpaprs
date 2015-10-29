@@ -230,7 +230,7 @@ class BCWNS_APRS {
             "txack"=>$packetObject->getAckCode(),
             "obj"=>&$packetObject
         );
-        $this->debug(print_r($this->_outbuffer,TRUE));
+        //$this->debug(print_r($this->_outbuffer,TRUE));
         return false;
     }
 
@@ -393,7 +393,7 @@ class BCWNS_APRS {
             }
 
             $header = $this->parseHeader($line);
-            $this->debug(print_r($header));
+            //$this->debug(print_r($header));
             if( $header == FALSE )
             {
                 $this->debug( "Header decode fail");
@@ -415,6 +415,7 @@ class BCWNS_APRS {
                 $func = $this->callbacks[$header['code']][$header['path'][0]];
                 if($func != "")
                 {
+                    $this->debug('going to call '. $func);
                     $res = $func($header,$line);
                     if ($res != FALSE)
                     {
@@ -428,6 +429,7 @@ class BCWNS_APRS {
                 $func = $this->callbacks[$header['code']]['*'];
                 if($func != "")
                 {
+                    $this->debug('going to call '. $func);
                     $res = $func($header,$line);
                     if ($res != FALSE)
                     {

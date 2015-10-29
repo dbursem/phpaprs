@@ -16,12 +16,12 @@ function txtmsg($aprs, $msg, $dest, $from = FALSE, $path = FALSE)
 function aprs2dec($ap)
 {
     $dir = substr($ap, -1, 1);
-    $sec = intval(substr($ap, -3, 2));
+    $min_frac = intval(substr($ap, -3, 2)); // APRS uses [hours][minutes].[hundreths_of_minutes], not seconds.
     $min = intval(substr($ap, strpos($ap, ".") - 2, 2));
-    $hr = intval(substr($ap, 0, strpos($ap, ".") - 2));
+    $deg = intval(substr($ap, 0, strpos($ap, ".") - 2)); // Angles are in degrees, not hours
 
-    $latd = $hr;
-    $latm = $min + $sec / 60;
+    $latd = $deg;
+    $latm = $min + $min_frac / 100; // APRS uses [hours][minutes].[hundreths_of_minutes], not seconds.
 
     $z = $latd + ($latm / 60);
 

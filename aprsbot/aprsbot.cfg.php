@@ -16,3 +16,9 @@ define("HOST","noam.aprs2.net");
 define("PORT",10152);
 
 define("BEACON_INTERVAL",60*15);
+
+define('FILTER','');
+
+define('DB_USER','example');
+define('DB_PASS','example');
+define('DB_NAME','example');
