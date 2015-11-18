@@ -14,19 +14,19 @@ There is an example APRS bot in the example directory. Your best chance to get t
 changing it as you like. 
 
 ### Minimal steps:
-1. Copy aprsbot.cfg.php to local.aprsbot.cfg.php and edit it with your required settings
-2. Make an aprs object
+* Copy aprsbot.cfg.php to local.aprsbot.cfg.php and edit it with your required settings
+* Make an aprs object
 ```php
 $aprs = new dbursem\phpaprs\APRS();
 ```
-3. Connect to the APRS host
+* Connect to the APRS host
 ```php
 if ($aprs->connect(HOST, PORT, MYCALL, PASSCODE, $filter) == FALSE) 
 {
     die( "Connect failed\n");
 }
 ```
-4. Create a loop to handle the input/output
+* Create a loop to handle the input/output
 ```php
 while(1){
 	$aprs->ioloop(5);
