@@ -1,4 +1,5 @@
 <?php
+
 /* Matthew Asham, VE7UDP <matthewa@bcwireless.net>
  * 
  * This file is part of phpAPRS.
@@ -18,7 +19,10 @@
  * along with phpAPRS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class BCWNS_APRS_Position extends BCWNS_APRS_BasePacket implements BCWNS_APRS_Packet {
+namespace dbursem\phpaprs\packets;
+use dbursem\phpaprs;
+
+class APRS_Position extends phpaprs\APRS_BasePacket implements phpaprs\APRS_Packet {
 
   private $_msg;
   
@@ -61,4 +65,3 @@ class BCWNS_APRS_Position extends BCWNS_APRS_BasePacket implements BCWNS_APRS_Pa
   }
   
 }
-?>

@@ -19,7 +19,9 @@
  * along with phpAPRS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class BCWNS_APRS_BasePacket
+namespace dbursem\phpaprs;
+
+class APRS_BasePacket
 {
     protected $_code;
     protected $_callsign;
@@ -169,7 +171,6 @@ class BCWNS_APRS_BasePacket
     {
         if ($time == 0) {
             $time = time();
-//      return(date('
         }
 
         return (date('dHi', $time));
@@ -179,7 +180,6 @@ class BCWNS_APRS_BasePacket
     {
         if ($time == 0) {
             $time = time();
-//      return(date('
         }
 
         return (date('His', $time));

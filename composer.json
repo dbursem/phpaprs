@@ -1,0 +1,29 @@
+{
+  "name": "dbursem/phpaprs",
+  "type": "library",
+  "description": "APRS Library for PHP",
+  "keywords": ["APRS"],
+  "homepage": "https://github.com/dbursem/phpaprs",
+  "license": "GPLv3",
+  "authors": [
+    {
+      "name": "Matthew Asham",
+      "email": "matthewa@bcwireless.net",
+      "role": "Initial Developer"
+    },
+    {
+      "name": "David Ursem",
+      "email": "david@dbursem.nl",
+      "role": "maintainer"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "dbursem\\phpaprs\\": "lib",
+      "aprsbot\\" : "example"
+    }
+  }
+}

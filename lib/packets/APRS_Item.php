@@ -19,7 +19,10 @@
  * along with phpAPRS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class BCWNS_APRS_Item extends BCWNS_APRS_BasePacket
+namespace dbursem\phpaprs\packets;
+use dbursem\phpaprs;
+
+class APRS_Item extends phpaprs\APRS_BasePacket
 {
     private $label;
     private $symbol;

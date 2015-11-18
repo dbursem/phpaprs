@@ -18,12 +18,9 @@
  * along with phpAPRS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace dbursem\phpaprs;
 
-/*
-
-For reference only - not used
-
-not complete either
+// APRS-codes - not complete
 
 define("APRSCODE_MICE",0x1c);
 define("APRSCODE_MICE_OLD",0x1d);
@@ -38,15 +35,13 @@ define("APRSCODE_MESSAGE",":");
 define("ARPSCODE_OBJECT",";");
 define("APRSCODE_CAPABILITIES","<");
 define("APRSCODE_POSITION_NOTS","=");
-define("ARPSCODE_STATUS",">");
+define("APRSCODE_STATUS",">");
 define("APRSCODE_QUERY",'?');
 define("APRSCODE_TELEMETRY","T");
 define("APRSCODE_USERDATA","{");
 define("APRSCODE_THIRDPARTY","}");
-*/
 
-
-interface BCWNS_APRS_Packet {
+interface APRS_Packet {
     public function getCode();
     public function setCode($c);
     public function getCallsign();
@@ -54,14 +49,7 @@ interface BCWNS_APRS_Packet {
     public function constructPacket();
 }
 
-
-require "class.bcwns.aprs.basepacket.php";
-require "packets/class.bcwns.aprs.item.php";
-require "packets/class.bcwns.aprs.message.php";
-require "packets/class.bcwns.aprs.position.php";
-
-
-class BCWNS_APRS {
+class APRS {
 
     private $callsign;
     private $passcode;
@@ -78,34 +66,26 @@ class BCWNS_APRS {
 
     private $_outbuffer;
 
-    private $_version;
     public $_debug;
+
+    private $_version = '1.0';
 
     private $_maxtransmit;
     private $server;
     private $port;
     private $callbacks;
 
-    function __construct()
+    public function __construct()
     {
 
         $this->_timeout = 5;
-        $this->_codes = array(
-            0x1c=>"APRSCODE_MICE",
-            0x1d=>"APRSCODE_MICE_OLD",
-            '!'=>"APRSCODE_POSITION",
-            ':'=>"APRSCODE_MESSAGE",
-            "/"=>"APRSCODE_STATUS",
-        );
-
-        $this->_version="0.01a_dbu";
-
         $this->_maxtransmit = 5;	// transmit a maximum of 5 times
         $this->_lastconn_attempt=1;
         $this->_conn_delay=5;
+
     }
 
-    function connect($host,$port,$callsign,$passcode=FALSE,$filter = '')
+    public function connect($host,$port,$callsign,$passcode=FALSE,$filter = '')
     {
         if ($this->_debug)
         {
@@ -154,20 +134,20 @@ class BCWNS_APRS {
         if (!empty($filter)) {
             $filter = ' filter ' . $filter;
         }
-        $this->_send("user ".$this->callsign." pass ".$this->passcode." vers BCWNS_APRS_Cli ".$this->_version . $filter."\n");
+        $this->_send("user ".$this->callsign." pass ".$this->passcode." vers dbursem\\phpaprs ".$this->_version . $filter."\n");
 
         return(TRUE);
     }
 
     // marks the connection as disconnected
-    function _disconnect()
+    private function _disconnect()
     {
         socket_shutdown($this->socket,2);
         socket_close($this->socket);
         $this->_connected = false;
     }
 
-    function _send($data)
+    private function _send($data)
     {
         $res=socket_send($this->socket,$data,strlen($data),0);
         if($res<=0)
@@ -183,7 +163,7 @@ class BCWNS_APRS {
         return($res);
     }
 
-    function sendPacket($packetObject,$path="BCWNS",$do=TRUE)
+    public function sendPacket($packetObject,$path="BCWNS",$do=TRUE)
     {
        if(!is_object($packetObject))
        {
@@ -191,7 +171,7 @@ class BCWNS_APRS {
             return(FALSE);
        }
 
-        if(!$packetObject instanceof BCWNS_APRS_BasePacket)
+        if(!$packetObject instanceof APRS_BasePacket)
         {
             $this->debug("sendPacket: packetObject is not an instance of BCWNS_APRS_BasePacket");
             return(FALSE);
@@ -235,12 +215,12 @@ class BCWNS_APRS {
     }
 
 
-    function getOutQueueLen()
+    private function getOutQueueLen()
     {
         return count($this->_outbuffer);
     }
 
-    function _processOut()
+    private function _processOut()
     {
         $this->debug("in processout");
 
@@ -291,14 +271,10 @@ class BCWNS_APRS {
         }
     }
 
-    function _processMessageAck($header)
+    private function _processMessageAck($header)
     {
         // processes acks..
-        $myHeader = BCWNS_APRS_Message::parsePacket($header);
-
-//        if($header['src'] == 'VE7UDP-4') {
-//            $this->debug("in processmessageack: " . print_r($myHeader, TRUE));
-//        }
+        $myHeader = packets\APRS_Message::parsePacket($header);
 
         if(empty($this->_outbuffer)) {
             return;
@@ -306,18 +282,20 @@ class BCWNS_APRS {
 
         foreach($this->_outbuffer as $idx=>$arr)
         {
-            if($arr['obj']->getCallsign() == $myHeader['txtdest']
+            /** @var $basepacket APRS_BasePacket() */
+            $basepacket = $arr['obj'];
+            if($basepacket->getCallsign() == $myHeader['txtdest']
                 && $myHeader['ack'] == ""
-                && $myHeader['msg']=="ack".$arr['obj']->getAckCode())
+                && $myHeader['msg']=="ack".$basepacket->getAckCode())
             {
                 $this->debug("Msg $idx recv ack ");
-                $arr['obj']->setAcked();
+                $basepacket->setAcked();
             }
         }
         return;
     }
 
-    function ioloop()
+    public function ioloop()
     {
         $read[] = $this->socket;
 
@@ -370,7 +348,7 @@ class BCWNS_APRS {
         return true;
     }
 
-    function process()
+    private function process()
     {
         $offset = strrpos($this->_inputdat,"\n");
 
@@ -400,49 +378,18 @@ class BCWNS_APRS {
                 continue;
             }
 
-//            if( $header['src'] == 'VE7UDP-4' )
-//            {
-//                $this->debug("Inbound message code: ".$header['code']." from ".$header['src']);
-//            }
             if($header['code'] == ':')
             {
                 $this->_processMessageAck($header);
             }
-
-            //execute callback functions for this path
-            if(isset($this->callbacks[$header['code']][$header['path'][0]]))
-            {
-                $func = $this->callbacks[$header['code']][$header['path'][0]];
-                if($func != "")
-                {
-                    $this->debug('going to call '. $func);
-                    $res = $func($header,$line);
-                    if ($res != FALSE)
-                    {
-                        // sent it
-                    }
-                }
-            }
-            //execute generic callback functions
-            if(isset($this->callbacks[$header['code']]['*']))
-            {
-                $func = $this->callbacks[$header['code']]['*'];
-                if($func != "")
-                {
-                    $this->debug('going to call '. $func);
-                    $res = $func($header,$line);
-                    if ($res != FALSE)
-                    {
-                        // sent it
-                    }
-                }
-            }
+            //callback
+            $this->callback($header,$line);
         }
 
         return;
     }
 
-    function parseHeader($data)
+    private function parseHeader($data)
     {
         if($data[0]=='#'){
             return(FALSE);
@@ -456,25 +403,49 @@ class BCWNS_APRS {
 
     }
 
-    function addCallback($code,$dest,$func)
+    /**
+     * @param $header
+     * @param $line
+     */
+    private function callback($header,$line)
     {
-        if(strlen($code)>1)
+        //execute callback functions for this path
+        if(!empty($this->callbacks[$header['code']][$header['path'][0]]))
         {
-            foreach($this->_codes as $c=>$name)
+
+            $func = $this->callbacks[$header['code']][$header['path'][0]];
+
+            $this->debug('going to c$destall ' . print_r($func));
+
+            if (!call_user_func($func, $header, $line))
             {
-                if($name==$code)
-                    $code=$c;
+                $this->debug('executing ' . print_r($func) . ' went wrong!');
             }
         }
-        if(strlen($code)>1)
+        //execute generic callback functions
+        if(!empty($this->callbacks[$header['code']]['*']))
         {
-            $this->debug( "Unknown named code: $code");
-            return(FALSE);
+            $func = $this->callbacks[$header['code']]['*'];
+
+            $this->debug('going to call '. print_r($func));
+
+            if (!call_user_func($func,$header,$line))
+            {
+                $this->debug('executing ' . print_r($func) . ' went wrong!');
+            }
+        }
+    }
+
+    public function addCallback($code,$dest,$func)
+    {
+        if (!is_callable($func,false,$name))
+        {
+            throw new \InvalidArgumentException($name . ' is not a valid callback function');
         }
         $this->callbacks[$code][$dest]=$func;
     }
 
-    function debug($str)
+    private function debug($str)
     {
         if($this->_debug==TRUE) {
             echo "debug: $str\n";
@@ -482,7 +453,7 @@ class BCWNS_APRS {
     }
 
 
-    function MakePassCode($callsign)
+    public function MakePassCode($callsign)
     {
         if(strpos($callsign,'-')!==FALSE) {
             $localCallsign = strtoupper(substr($callsign,0,strpos($callsign,'-')));

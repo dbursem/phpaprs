@@ -1,0 +1,14 @@
+// Dev notes
+
+This library is pretty alpha.  It works, but there's some stuff that needs to be refactored.
+ 
+ * Packet callbacks should pass an object of a packet type instead of the parsed header and raw ax.25 info field
+    * Right now each callback has to decode the ax.25 data field to extract lat/long/reports, messages, etc.
+    * The message call back has to handle ack/nack itself.  This makes logical sense since a bot might want to respond to messages not destined for it, but there should be a helper function that does the parsing and ack for you
+ 
+ * Doesn't support mic-e
+ * Doesn't support wx objects
+ 
+ other stuff
+ 
+ 
