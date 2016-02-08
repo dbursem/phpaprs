@@ -415,11 +415,11 @@ class APRS {
 
             $func = $this->callbacks[$header['code']][$header['path'][0]];
 
-            $this->debug('going to c$destall ' . print_r($func));
+            $this->debug('going to call '. $func[1]);
 
             if (!call_user_func($func, $header, $line))
             {
-                $this->debug('executing ' . print_r($func) . ' went wrong!');
+                $this->debug('executing ' . $func[1] . ' went wrong!');
             }
         }
         //execute generic callback functions
@@ -427,11 +427,11 @@ class APRS {
         {
             $func = $this->callbacks[$header['code']]['*'];
 
-            $this->debug('going to call '. print_r($func));
+            $this->debug('going to call '. $func[1]);
 
             if (!call_user_func($func,$header,$line))
             {
-                $this->debug('executing ' . print_r($func) . ' went wrong!');
+                $this->debug('executing ' . $func[1] . ' went wrong!');
             }
         }
     }
