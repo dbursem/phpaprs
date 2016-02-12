@@ -4,14 +4,17 @@ All I did was some refactoring to get to know the code.
 The original readme, credits and license can be found in /doc.
 
 ##Installation
-clone this repo and run `composer update` in the root directory, to activate the composer autoloader. 
-
-I'll see if I can make this my first project on packagist soon!
+run `composer require dbursem/phpaprs`. Check http://getcomposer.org for more info on composer.
 
 ##Usage
 
 There is an example APRS bot in the example directory. Your best chance to get things working is using this example and
 changing it as you like. 
+* Copy the example directory to your install directory
+* Copy the aprsbot.cfg.php file to local.aprsbot.cfg.php and edit it with your personal settings. 
+* Set the filter to a valid APRS filter.
+* Call the example aprsbot from the commandline with `php aprsbot.php`.
+
 
 ### Minimal steps:
 * Copy aprsbot.cfg.php to local.aprsbot.cfg.php and edit it with your required settings
