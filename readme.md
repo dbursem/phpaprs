@@ -1,12 +1,12 @@
-#PHPAPRS
+# PHPAPRS
 This is basically a fork of the phpAPRS library by Matthew Asham.
 All I did was some refactoring to get to know the code.
 The original readme, credits and license can be found in /doc.
 
-##Installation
+## Installation
 run `composer require dbursem/phpaprs`. Check http://getcomposer.org for more info on composer.
 
-##Usage
+## Usage
 
 There is an example APRS bot in the example directory. Your best chance to get things working is using this example and
 changing it as you like. 
