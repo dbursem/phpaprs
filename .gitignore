@@ -1,4 +1,2 @@
-# Created by .ignore support plugin (hsz.mobi)
-example/local.aprsbot.cfg.php
-.idea/*
+.idea
 vendor
